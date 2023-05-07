@@ -1,0 +1,23 @@
+ steps:
+ # build the container image
+ - name: 'gcr.io/cloud-builders/docker'
+   args: ['build', '-t', 'gcr.io/career-272208/all-of-career-backend:$COMMIT_SHA', '.']
+ # push the container image to Container Registry
+ - name: 'gcr.io/cloud-builders/docker'
+   args: ['push', 'gcr.io/career-272208/all-of-career-backend:$COMMIT_SHA']
+ # Deploy container image to Cloud Run
+ - name: 'gcr.io/cloud-builders/gcloud'
+   args:
+   - 'run'
+   - 'deploy'
+   - 'all-of-career-backend'
+   - '--image'
+   - 'gcr.io/career-272208/all-of-career-backend:$COMMIT_SHA'
+   - '--region'
+   - 'us-central' #指定リージョン
+   - '--platform'
+   - 'managed'
+ images:
+ - 'gcr.io/career-272208/all-of-career-backend:$COMMIT_SHA'
+
+# [SER]

@@ -1,0 +1,48 @@
+version: "3"
+
+services:
+  web:
+    build: 
+      context: ./
+      dockerfile: ./build/nginx/Dockerfile
+    container_name: career-web-web
+    hostname: 'web-dev'
+    ports:
+      - 8000:80
+    depends_on:
+      - ap
+  ap:
+    build: 
+        context: ./
+        dockerfile: ./Dockerfile #dockerfileの指定
+    container_name: career-web-ap
+    tty: true
+    # volumes: 
+    #   - ./:/go/src/
+    ports:
+      - 8081:8081
+    depends_on: #DBに依存している　APIサーバがDBにアクセスする。アクセス方向にdepends_onを指定
+      - db
+      - redis
+    links: 
+      - db
+    # entrypoint: ./wait-for-it.sh -t 60 --strict db:3306 -- ./career-web-backend 
+  db:
+    image: mysql:latest
+    restart: always #コンテナ起動時に自動起動する設定。自動起動させたくない場合はこの記述を削除すれば良い
+    container_name: career-web-db #コンテナの名前を決める、あってもなくても良い
+    ports:
+      - 3306:3306 #どのポートを開放するかを設定":"の左側はホストのポート、右側はコンテナのポート
+    volumes: # ./mysqlと言うローカルディレクトりをコンテナの指定ディレクトリにマウント
+      - ./db/docker-init:/docker-entrypoint-initdb.d
+      - ./db/conf/:/etc/mysql/conf.d
+      - ./db/log/:/var/log/mysql
+    environment: #環境変数を指定する場合はこのように記述する。
+      MYSQL_ROOT_PASSWORD: rootpassword
+      TZ: Asia/Tokyo
+  redis:
+    image: redis:latest
+    restart: always
+    container_name: career-web-redis
+    ports:
+      - 6379:6379

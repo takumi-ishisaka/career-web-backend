@@ -1,0 +1,11 @@
+setup.txt
+config.ini
+.idea
+main.exe
+docs/master.txt
+app.yaml
+Makefile
+mysql.log
+mysql_error.log
+mysql_slow.log
+mysql.cnf

@@ -1,0 +1,1267 @@
+swagger: "2.0"
+info:
+  description: "就活生向け就活支援アプリケーションのAPI仕様書です。保守運用のためにAPI仕様をドキュメント化しておきます。利用言語はGolangです。"
+  version: "1.0.0"
+  title: "[All Of Career] API"
+host: "localhost:8081"
+tags:
+  - name: "user"
+    description: "ユーザ関連API"
+  - name: "mentor"
+    description: "メンター関連API"
+  - name: "action"
+    description: "アクション関連API"
+  - name: "category"
+    description: "カテゴリー関連API"
+  - name: "profile"
+    description: "プロフィール関連API"
+  - name: "user_action"
+    description: "ユーザアクション関連API"
+  - name: "feedback"
+    description: "フィードバック関連API"
+schemes:
+  - "http"
+paths:  
+  /user/signup:
+    post:
+      tags:
+        - "user"
+      summary: "アカウント新規登録"
+      description: "フォームからemailとpasswordを受け取り、バリデーションチェックをして、userテーブルに保存する。\n
+                    passwordは8文字以上、emailはメアドの形式であること。"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Request Body"
+          required: true
+          schema:
+            $ref: "#/definitions/UserSignupRequest"
+      responses:
+        200:
+          "description": "A successful response."
+        400:
+          "description": "Validation error"
+          "schema":
+            "$ref": "#/definitions/ErrorResponse"
+        500:
+          "description": "Internal Server Errors"
+          "schema":
+            "$ref": "#/definitions/ErrorResponse"
+  /user/validation?id=:
+    post:
+      tags:
+        - "user"
+      summary: "email確認API"
+      description: "user/signupで送信したEmailにこのAPIを叩くURIが貼ってあるため、そのURIを叩く\n
+                    クエリのidはuserIDを示しておりサーバー側のRedisで保持してあるuserIDと一致すればDBにemailやpassword
+                    などの情報をinsertする。"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          "description": "A successful response."
+        400:
+          "description": "Validation error"
+          "schema":
+            "$ref": "#/definitions/ErrorResponse"
+        500:
+          "description": "Internal Server Errors"
+          "schema":
+            "$ref": "#/definitions/ErrorResponse"
+            
+  /user/signin:
+    post:
+      tags:
+        - "user"
+      summary: "セキュアなログイン"
+      description: "セキュアなログインを実装します。\n
+                    パスワードとemailを受け取り、userテーブルから両方が一致するレコードがあれば、取得し、JWTを生成します。\n
+                    データベースに保存されているpasswodはハッシュ化されてるため、パスワードの比較の際は受け取ったパスワードを同じハッシュ関数にかけ、ハッシュ化された値同士を比較します。 \n
+                    JWTはCookieに保存されます。"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Request Body"
+          required: true
+          schema:
+            $ref: "#/definitions/UserSigninRequest"
+      responses:
+        200:
+          "description": "A successful response."
+          "schema":
+            "$ref": "#/definitions/UserSigninResponse"
+        401:
+          "description": "invalid user infomation."
+          "schema":
+            "$ref": "#/definitions/ErrorResponse"
+        500:
+          "description": "Internal Server Error."
+          "schema":
+            "$ref": "#/definitions/ErrorResponse"
+  
+  /user/get:
+     get:
+      tags:
+        - "user"
+      summary: "ユーザ情報取得"
+      description: "ユーザ情報を取得します。\n
+                    ユーザIDを用いて、取得します。\n"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "header"
+          name: "Authorization"
+          description: "JWT"
+          required: true
+          type: "string"
+      responses:
+        200:
+          "description": "A successful response."
+          "schema":
+            "$ref": "#/definitions/UserGetResponse"
+        500:
+          "description": "Internal Server Errors"
+          "schema":
+            "$ref": "#/definitions/ErrorResponse"
+
+  /user/update:
+    put:
+      tags:
+        - "user"
+      summary: "ユーザ情報更新"
+      description: "ユーザ情報の更新をします。\n
+                    メールアドレスのみ更新可能でメールアドレスはフォームデータです。"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "header"
+          name: "Authorization"
+          description: "JWT"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Request Body"
+          required: true
+          schema:
+            $ref: "#/definitions/UserUpdateRequest"
+      responses:
+        200:
+          "description": "A successful response."
+        500:
+          "description": "Internal Server Errors"
+          "schema":
+            "$ref": "#/definitions/ErrorResponse"
+
+  /contact:
+    post:
+      tags:
+        - "user"
+      summary: "お問い合わせ機能"
+      description: "アプリ運営側へのお問い合わせ機能。\n
+                    フォームに書き込まれたタイトルとお問い合わせ内容を参照し、その内容をアプリ側のgmailからuserのemailへ送信する。
+                    そのため、MLでお問い合わせ内容を確認する。\n
+                    
+                    ※まだ、テストできていません。"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "header"
+          name: "Authorization"
+          description: "JWT"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Request Body"
+          required: true
+          schema:
+            $ref: "#/definitions/ContactReqeust"
+      responses:
+        200:
+          "description": "A successful response."
+        500:
+          "description": "Internal Server Errors"
+          "schema":
+            "$ref": "#/definitions/ErrorResponse" 
+
+  /mentor/signin:
+    post:
+      tags:
+        - "mentor"
+      summary: "セキュアなログイン"
+      description: "セキュアなログインを実装します。\n
+                    パスワードとemailを受け取り、userテーブルから両方が一致するレコードがあれば、取得\n
+                    Statusがメンターか否かを判断し、JWTを生成します。\n
+                    データベースに保存されているpasswodはハッシュ化されてるため、パスワードの比較の際は受け取ったパスワードを同じハッシュ関数にかけ、ハッシュ化された値同士を比較します。 \n
+                    JWTはCookieに保存されます。"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Request Body"
+          required: true
+          schema:
+            $ref: "#/definitions/MentorSigninRequest"
+      responses:
+        200:
+          "description": "A successful response."
+          "schema":
+            "$ref": "#/definitions/MentorSigninResponse"
+        401:
+          "description": "invalid user infomation."
+          "schema":
+            "$ref": "#/definitions/ErrorResponse"
+        500:
+          "description": "Internal Server Error."
+          "schema":
+            "$ref": "#/definitions/ErrorResponse"
+
+  /mentor/feedback:
+    post:
+      tags:
+        - "mentor"
+      summary: "メンターからのフィードバック機能"
+      description: "あるユーザーアクションに対するコメントをする機能。\n
+                   フォームにコメントを入れ。セレクトボックスで承諾、非承諾を選択。\n
+                   承諾ならばuser_actionのstatusをapproval(3)に変え\n
+                   非承諾ならuser_actionのstatusをtodo(1)に変更する\n
+                   フィードバックをされると、ユーザーのemail宛にFBの通知が届く"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "header"
+          name: "Authorization"
+          description: "JWT"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Request Body"
+          required: true
+          schema:
+            $ref: "#/definitions/FeedBackInsertRequest"
+      responses:
+        200:
+          "description": "A successful response."
+        500:
+          "description": "Internal Server Errors"
+          "schema":
+            "$ref": "#/definitions/ErrorResponse"
+
+  /mentor/done_user_actions:
+    get:
+      tags:
+        - "mentor"
+      summary: "全てのDONEユーザーアクション情報の取得"
+      description: "全てのDONEユーザーアクションおよび、そのユーザーアクションに対応するアクション情報を取得する\n"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "header"
+          name: "Authorization"
+          description: "JWT"
+          required: true
+          type: "string"
+      responses:
+        200:
+          "description": "A successful response."
+          "schema":
+            "$ref": "#/definitions/DoneUserActionResponse"
+        500:
+          "description": "Internal Server Errors"
+          "schema":
+            "$ref": "#/definitions/ErrorResponse"
+  /actions:
+    get:
+      tags:
+        - "action"
+      summary: "カテゴリー指定アクション一覧取得"
+      description: "指定されたカテゴリーのアクションを取得します。クエリパラメータは次のように渡します。\n
+                    /actions?category_id=〇〇"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "header"
+          name: "Authorization"
+          description: "JWT"
+          required: true
+          type: "string"
+      responses:
+        200:
+          "description": "A successful response."
+          "schema":
+            "$ref": "#/definitions/ActionsShowResponse"
+        500:
+          "description": "Internal Server Errors"
+          "schema":
+            "$ref": "#/definitions/ErrorResponse"
+
+  /action/show:
+    get:
+      tags:
+        - "action"
+      summary: "アクション詳細情報取得"
+      description: "アクションの詳細情報を取得します。クエリパラメータは次のように渡します。\n
+                    /action/show?action_id=〇〇"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "header"
+          name: "Authorization"
+          description: "JWT"
+          required: true
+          type: "string"
+      responses:
+        200:
+          "description": "A successful response."
+          "schema":
+            "$ref": "#/definitions/ActionDetailShowResponse"
+        500:
+          "description": "Internal Server Errors"
+          "schema":
+            "$ref": "#/definitions/ErrorResponse"
+
+  /category/list:
+    get:
+      tags:
+        - "category"
+      summary: "カテゴリー一覧取得"
+      description: "カテゴリー一覧を取得します。\n"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "header"
+          name: "Authorization"
+          description: "JWT"
+          required: true
+          type: "string"
+      responses:
+        200:
+          "description": "A successful response."
+          "schema":
+            "$ref": "#/definitions/CategoryListResponse"
+        500:
+          "description": "Internal Server Errors"
+          "schema":
+            "$ref": "#/definitions/ErrorResponse"
+
+  /profile:
+    get:
+      tags:
+        - "profile"
+      summary: "プロフィール取得"
+      description: "プロフィールを取得します。\n
+                    image_pathは画像ファイルのパスです。画像ファイルはWebサーバに保存し、パスはDBに保存する。\n
+                    画像名はuniqueなものにすること。"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "header"
+          name: "Authrorization"
+          description: "JWT"
+          required: true
+          type: "string"
+      responses:
+        200:
+          "description": "A successful response."
+          "schema":
+            "$ref": "#/definitions/ProfileGetResponse"
+        500:
+          "description": "Internal Server Errors"
+          "schema":
+            "$ref": "#/definitions/ErrorResponse"
+            
+  /profile/upsert:
+    put:
+      tags:
+        - "profile"
+      summary: "プロフィール保存&更新"
+      description: "プロフィールの保存と更新をします。\n
+                   名前、卒業年度、志望職種、志望業界、メッセージ、画像、内定ステータスのみ変更可能。\n
+                   プロフィール情報はすべてフォームデータです。"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "header"
+          name: "Authorization"
+          description: "JWT"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Request Body"
+          required: true
+          schema:
+            $ref: "#/definitions/ProfileUpsertRequest"
+      responses:
+        200:
+          "description": "A successful response."
+        500:
+          "description": "Internal Server Errors"
+          "schema":
+            "$ref": "#/definitions/ErrorResponse"
+
+  /profile/search:
+    post:
+      tags:
+        - "profile"
+      summary: "ユーザプロフィール一覧検索"
+      description: "ユーザプロフィール一覧を取得します。\n
+                   名前、大学、卒業年度、志望職種、志望業界で検索をかける。\n
+                   すべてフォームデータでセレクトボックス形式にする。"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "header"
+          name: "Authorization"
+          description: "JWT"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Request Body"
+          required: true
+          schema:
+            $ref: "#/definitions/ProfilesSearchRequest"
+      responses:
+        200:
+          "description": "A successful response."
+          "schema":
+            "$ref": "#/definitions/ProfilesSearchResponse"
+        500:
+          "description": "Internal Server Errors"
+          "schema":
+            "$ref": "#/definitions/ErrorResponse"
+            
+  /user_action/todo:
+    get:
+      tags:
+        - "user_action"
+      summary: "TODOアクション一覧取得"
+      description: "TODOアクションの一覧を取得します。\n"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "header"
+          name: "Authorization"
+          description: "JWT"
+          required: true
+          type: "string"
+      responses:
+        200:
+          "description": "A successful response."
+          "schema":
+            "$ref": "#/definitions/UserActionDetailShowsResponse"
+        500:
+          "description": "Internal Server Errors"
+          "schema":
+            "$ref": "#/definitions/ErrorResponse"
+    
+  /user_action/done:
+    get:
+      tags:
+        - "user_action"
+      summary: "DONEアクション一覧取得"
+      description: "DONEアクションの一覧を取得します。\n"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "header"
+          name: "Authorization"
+          description: "JWT"
+          required: true
+          type: "string"
+      responses:
+        200:
+          "description": "A successful response."
+          "schema":
+            "$ref": "#/definitions/UserActionDetailShowsResponse"
+        500:
+          "description": "Internal Server Errors"
+          "schema":
+            "$ref": "#/definitions/ErrorResponse"
+
+  /user_action/approval:
+    get:
+      tags:
+        - "user_action"
+      summary: "APPROVALアクション一覧取得"
+      description: "APPROVALアクションの一覧を取得します。\n"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "header"
+          name: "Authorization"
+          description: "JWT"
+          required: true
+          type: "string"
+      responses:
+        200:
+          "description": "A successful response."
+          "schema":
+            "$ref": "#/definitions/UserActionDetailShowsResponse"
+        500:
+          "description": "Internal Server Errors"
+          "schema":
+            "$ref": "#/definitions/ErrorResponse"
+
+  /user_action/again:
+    get:
+      tags:
+        - "user_action"
+      summary: "AGAINアクション一覧取得"
+      description: "AGAINアクションの一覧を取得します。\n"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "header"
+          name: "Authorization"
+          description: "JWT"
+          required: true
+          type: "string"
+      responses:
+        200:
+          "description": "A successful response."
+          "schema":
+            "$ref": "#/definitions/UserActionDetailShowsResponse"
+        500:
+          "description": "Internal Server Errors"
+          "schema":
+            "$ref": "#/definitions/ErrorResponse"
+
+  /user_action/change:
+    put:
+      tags:
+        - "user_action"
+      summary: "ユーザアクションステータス変更"
+      description: "ユーザアクションのステータスを変更します。\n
+                    ステータスの変更はnotselect⇔todo、todo→doneの3通りがあります。\n
+                    action_idとstatusはjson形式で渡します。\n
+                    statusにはnotselect、todo、doneを渡します。\n
+                    todoに追加するときはtodoを渡し、todoから削除するときはnotselectを渡します。\n
+                    doneに追加するときはdoneを渡します。"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "header"
+          name: "Authorization"
+          description: "JWT"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Request Body"
+          required: true
+          schema:
+            $ref: "#/definitions/UserActionRequest"
+      responses:
+        200:
+          "description": "A successful response."
+        500:
+          "description": "Internal Server Errors"
+          "schema":
+            "$ref": "#/definitions/ErrorResponse"
+          
+  /user_action/reflection?action_id=:
+    get:
+      tags:
+        - "user_action"
+      summary: "該当action_idの内省情報取得"
+      description: "該当するaction_idの内省情報を取得します。\n
+                    action_idはクエリパラメータで渡します。\n
+                    /user_action/reflection?action_id=〇〇\n"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "header"
+          name: "Authorization"
+          description: "JWT"
+          required: true
+          type: "string"
+      responses:
+        200:
+          "description": "A successful response."
+          "schema":
+            "$ref": "#/definitions/ReflectionResponse"
+        500:
+          "description": "Internal Server Errors"
+          "schema":
+            "$ref": "#/definitions/ErrorResponse"
+
+  /user_action/reflection/:action_id:
+    post:
+      tags:
+        - "user_action"
+      summary: "内省フォームへの入力"
+      description: "内省フォームへ入力を行います。\n
+                    このハンドラが起動するのはuseractionがDone状態に遷移した時です。\n
+                    :action_idにreflection中のaction_idを指定して、渡します。\n
+                    KPTはフォームデータです。また、フォームの空白は認めません。\n
+                    また、reflectionのinsertが完了すると運営側にFB依頼のemailが送信されます\n"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "header"
+          name: "Authorization"
+          description: "JWT"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Request Body"
+          required: true
+          schema:
+            $ref: "#/definitions/ReflectionReqeust"
+      responses:
+        200:
+          "description": "A successful response."
+        500:
+          "description": "Internal Server Errors"
+          "schema":
+            "$ref": "#/definitions/ErrorResponse"
+                    
+  /user_action/done_approval:
+    get:
+      tags:
+        - "user_action"
+      summary: "DoneとApprovalのユーザーアクションの一覧を取得"
+      description: "DONEとApprovalのユーザーアクションの一覧を取得\n
+                    "
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "header"
+          name: "Authorization"
+          description: "JWT"
+          required: true
+          type: "string"
+      responses:
+        200:
+          "description": "A successful response."
+          "schema":
+            "$ref": "#/definitions/UserActionDetailShowsResponse"
+        500:
+          "description": "Internal Server Errors"
+          "schema":
+            "$ref": "#/definitions/ErrorResponse"
+
+  /feedback/get?user_action_id=:
+    get:
+      tags:
+        - "feedback"
+      summary: "userActionIDに対応するフィードバック情報の取得"
+      description: "該当user_action_idのフィードバック情報を取得します。\n
+                    user_action_idはqueryで渡します。\n"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "header"
+          name: "Authorization"
+          description: "JWT"
+          required: true
+          type: "string"
+      responses:
+        200:
+          "description": "A successful response."
+          "schema":
+            "$ref": "#/definitions/GetFeedBacksResponse"
+        500:
+          "description": "Internal Server Errors"
+          "schema":
+            "$ref": "#/definitions/ErrorResponse"
+
+  /user_action/feedback/list:
+    get:
+      tags:
+        - "feedback"
+      summary: "フィードバック情報の一覧取得"
+      description: "userのTodoアクション、Approvalアクションに対する\n
+                    userActionIDを取得、userActionIDからfeedback取得"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "header"
+          name: "Authorization"
+          description: "JWT"
+          required: true
+          type: "string"
+      responses:
+        200:
+          "description": "A successful response."
+          "schema":
+            "$ref": "#/definitions/GetFeedBacksResponse"
+        500:
+          "description": "Internal Server Errors"
+          "schema":
+            "$ref": "#/definitions/ErrorResponse"  
+
+definitions:
+  UserSignupRequest:
+    type: "object"
+    properties:
+      email:
+        type: "string"
+        description: "メールアドレス"
+      password:
+        type: "string"
+        description: "パスワード"
+
+  UserSigninRequest:
+    type: "object"
+    properties:
+      email:
+        type: "string"
+        description: "メールアドレス"
+      password:
+        type: "string"
+        description: "パスワード"
+
+  UserSigninResponse:
+    type: "object"
+    properties:
+      token:
+        type: "string"
+        description: "認証トークン"
+      status:  
+        type: "integer"
+        description: "ステータス"
+
+  UserGetResponse:
+    type: "object"
+    properties:
+      email:
+        type: "string"
+        description: "メールアドレス"
+      password:
+        type: "string"
+        description: "パスワード"
+
+  UserUpdateRequest:
+    type: "object"
+    properties:
+      email:
+        type: "string"
+        description: "メールアドレス"
+  MentorSigninRequest:
+    type: "object"
+    properties:
+      email:
+        type: "string"
+        description: "メールアドレス"
+      password:
+        type: "string"
+        description: "パスワード"
+  MentorSigninResponse:
+    type: "object"
+    properties:
+      token:
+        type: "string"
+        description: "認証トークン"
+      status:  
+        type: "integer"
+        description: "ステータス"
+  FeedBackInsertRequest:
+    type: "object"
+    properties:
+      user_action_id:
+        type: "string"
+        description: "ユーザーアクションID"
+      comment:
+        type: "string"
+        description: "コメント"
+      approval:
+        type: "integer"
+        description: "承認"
+  FeedBackGetRequest:
+    type: "object"
+    properties:
+      user_action_id:
+        type: "string"
+        description: "ユーザーアクションID"
+  GetFeedBackResponse:
+    type: "object"
+    properties:
+      feedback_id:
+        type: "string"
+        description: "フィードバックID"
+      user_action_id:
+        type: "string"
+        description: "ユーザーアクションID"
+      comment:
+        type: "string"
+        description: "コメント"
+      updated_at:
+        type: "string"
+        description: "更新時間"
+  GetFeedBacksResponse:
+    type: "object"
+    properties:
+      get_feedback_response:
+        type: "array"
+        items:
+          $ref: "#/definitions/GetFeedBackResponse"
+  ActionShowResponse:
+    type: "object"
+    properties:
+      action:
+        type: "object"
+        properties:
+          action_id:
+            type: "string"
+            description: "アクションID"
+          category_id:
+            type: "string"
+            description: "カテゴリID"
+          title:
+            type: "string"
+            description: "タイトル"
+          content:
+            type: "string"
+            description: "内容"
+          standard_time:
+            type: "string"
+            description: "目安時間"
+          action_type:
+            type: "integer"
+            description: "アクションタイプ"
+          url:
+            type: "string"
+            description: "URL"
+          after:
+            type: "string"
+            description: "アクション後の状態"
+      recommendation_value:
+        type: "integer"
+        description: "評価平均値"
+      done_user_num:
+        type: "integer"
+        description: "タスク完了ユーザ数"
+  
+  ActionsShowResponse:
+    type: "object"
+    properties:
+      actions:
+        type: "array"
+        items:
+          $ref: "#/definitions/ActionShowResponse"
+
+  ActionDetailShowResponse:
+    type: "object"
+    properties:
+      action:
+        type: "object"
+        properties:
+          action_id:
+            type: "string"
+            description: "アクションID"
+          category_id:
+            type: "string"
+            description: "カテゴリID"
+          title:
+            type: "string"
+            description: "タイトル"
+          content:
+            type: "string"
+            description: "内容"
+          standard_time:
+            type: "string"
+            description: "目安時間"
+          action_type:
+            type: "integer"
+            description: "アクションタイプ"
+          url:
+            type: "string"
+            description: "URL"
+          after:
+            type: "string"
+            description: "アクション後の状態"
+      category_name:
+        type: "string"
+        description: "カテゴリー名"
+      recommendation_value:
+        type: "integer"
+        description: "評価平均値"
+      done_user_num:
+        type: "integer"
+        description: "タスク完了ユーザ数"
+  ActionDetailShowsResponse:
+    type: "object"
+    properties:
+      ActionDetailShowResponse:
+        type: "array"
+        items:
+          $ref: "#/definitions/ActionDetailShowResponse"
+  UserActionDetailShowResponse:
+    type: "object"
+    properties:
+      user_action_id:
+        type: "string"
+        description: "ユーザーアクションID"
+      action:
+        type: "object"
+        properties:
+          action_id:
+            type: "string"
+            description: "アクションID"
+          category_id:
+            type: "string"
+            description: "カテゴリID"
+          title:
+            type: "string"
+            description: "タイトル"
+          content:
+            type: "string"
+            description: "内容"
+          standard_time:
+            type: "string"
+            description: "目安時間"
+          action_type:
+            type: "integer"
+            description: "アクションタイプ"
+          url:
+            type: "string"
+            description: "URL"
+          after:
+            type: "string"
+            description: "アクション後の状態"
+      category_name:
+        type: "string"
+        description: "カテゴリー名"
+      recommendation_value:
+        type: "integer"
+        description: "評価平均値"
+      done_user_num:
+        type: "integer"
+        description: "タスク完了ユーザ数"
+  UserActionDetailShowsResponse:
+    type: "object"
+    properties:
+      user_action_detail_shows_response:
+        type: "array"
+        items:
+          $ref: "#/definitions/UserActionDetailShowResponse"
+  CategoryShowResponse:
+    type: "object"
+    properties:
+      category_id:
+        type: "integer"
+        description: "カテゴリID"
+      name:
+        type: "string"
+        description: "カテゴリ名"
+      goal:
+        type: "string"
+        description: "goal"
+  CategoryListResponse:
+    type: "object"
+    properties:
+      categories:
+        type: "array"
+        items:
+          $ref: "#/definitions/CategoryShowResponse"
+
+  ContactReqeust:
+    type: "object"
+    properties:
+      title:
+        type: "string"
+        description: "お問い合わせタイトル"
+      content:
+        type: "string"
+        description: "お問い合わせ内容"
+  
+  ProfileGetResponse:
+    type: "object"
+    properties:
+      user_id: 
+        type: "string" 
+        description: "ユーザID"
+      name:
+        type: "string"
+        description: "名前"
+      university:
+        type: "string"
+        description: "大学"
+      major:
+        type: "string"
+        description: "専攻"
+      graduation_year:
+        type: "integer"
+        description: "卒業年度"
+      aspiring_occupation:
+        type: "string"
+        description: "志望職種"
+      aspiring_field:
+        type: "string"
+        description: "志望業界"
+      sentence:
+        type: "string"
+        description: "メッセージ"
+      image_path:
+        type: "string"
+        description: "画像のパス"
+      job_hunting_status:
+        type: "integer"
+        description: "内定ステータス"
+      deviation_value:
+        type: "integer"
+        description: "偏差値"
+      
+  ProfileUpsertRequest:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "名前"
+      university:
+        type: "string"
+        description: "大学"
+      major:
+        type: "string"
+        description: "専攻"
+      graduation_year:
+        type: "integer"
+        description: "卒業年度"
+      aspiring_occupation:
+        type: "string"
+        description: "志望職種"
+      aspiring_field:
+        type: "string"
+        description: "志望業界"
+      sentence:
+        type: "string"
+        description: "メッセージ"
+      image_path:
+        type: "string"
+        description: "画像のパス"
+      job_hunting_status:
+        type: "integer"
+        description: "内定ステータス"
+
+  ProfilesSearchRequest:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "名前"
+      university:
+        type: "string"
+        description: "大学"
+      graduation_year:
+        type: "integer"
+        description: "卒業年度"
+      aspiring_occupation:
+        type: "string"
+        description: "志望職種"
+      aspiring_field:
+        type: "string"
+        description: "志望業界"
+      
+  ProfilesSearchResponse:
+    type: "object"
+    properties:
+      actions:
+        type: "array"
+        items:
+          $ref: "#/definitions/ProfileGetResponse"
+
+  UserActionRequest:
+    type: "object"
+    properties:
+      action_id: 
+        type: "string"
+        description: "アクションID"
+      status:
+        type: "string"
+        description: "ステータス"
+        
+  UserActionResponse:
+    type: "object"
+    properties:
+      user_action_id:
+        type: "string"
+        description: "ユーザアクションID"
+      user_id:
+        type: "string"
+        description: "ユーザID"
+      action_id:
+        type: "string"
+        description: "アクションID"
+      status:
+        type: "integer"
+        description: "ステータス"
+      do:
+        type: "string"
+        description: "実施したアクション"
+      reflection:
+        type: "string"
+        description: "内省"
+      next_action:
+        type: "string"
+        description: "ネクストアクション"
+      update_at:
+        type: "string"
+        description: "更新時間"
+      evaluate_value:
+        type: "integer"
+        description: "アクション評価値"
+  UserActionsResponse:
+    type: "object"
+    properties:
+      actions:
+        type: "array"
+        items:
+          $ref: "#/definitions/UserActionResponse"
+  DoneUserActionResponse:
+    type: "object"
+    properties:
+      user_action_id:
+        type: "string"
+        description: "ユーザアクションID"
+      user_id:
+        type: "string"
+        description: "ユーザID"
+      action_id:
+        type: "string"
+        description: "アクションID"
+      status:
+        type: "integer"
+        description: "ステータス"
+      do:
+        type: "string"
+        description: "実施したアクション"
+      reflection:
+        type: "string"
+        description: "内省"
+      next_action:
+        type: "string"
+        description: "ネクストアクション"
+      update_at:
+        type: "string"
+        description: "更新時間"
+      evaluate_value:
+        type: "integer"
+        description: "アクション評価値"
+      action:
+        type: "object"
+        properties:
+          action_id:
+            type: "string"
+            description: "アクションID"
+          category_id:
+            type: "string"
+            description: "カテゴリID"
+          title:
+            type: "string"
+            description: "タイトル"
+          content:
+            type: "string"
+            description: "内容"
+          standard_time:
+            type: "string"
+            description: "目安時間"
+          action_type:
+            type: "integer"
+            description: "アクションタイプ"
+          example:
+            type: "string"
+            description: "例"
+          before:
+            type: "string"
+            description: "アクション前の状態"
+          after:
+            type: "string"
+            description: "アクション後の状態"
+  ReflectionResponse:
+    type: "object"
+    properties:
+      do:
+        type: "string"
+        description: "行ったこと"
+      reflection:
+        type: "string"
+        description: "反省"
+      next_action:
+        type: "string"
+        description: "次にトライしたいこと"
+      evaluate_value:
+        type: "integer"
+        description: "タスクの評価値"
+  ReflectionReqeust:
+    type: "object"
+    properties:
+      do:
+        type: "string"
+        description: "行ったこと"
+      reflection:
+        type: "string"
+        description: "反省"
+      next_action:
+        type: "string"
+        description: "次にトライしたいこと"
+      evaluate_value:
+        type: "integer"
+        description: "タスクの評価値"
+
+  ErrorResponse:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+        description: "エラーメッセージ"

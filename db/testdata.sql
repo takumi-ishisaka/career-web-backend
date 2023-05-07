@@ -1,0 +1,58 @@
+-- use career_db;
+
+-- SET NAMES utf8mb4;
+
+-- INSERT INTO category (`category_id`,`name`,`goal`) VALUES ('category_001','自己分析',`自分をしる`);
+-- INSERT INTO category (`category_id`,`name`,`goal`) VALUES ('category_002','業界分析',`社会を知る`);
+-- INSERT INTO category (`category_id`,`name`,`goal`) VALUES ('category_003','キャリアデザイン',`未来を知る`);
+-- INSERT INTO action (`action_id`,`category_id`,`title`,`content`,`standard_time`,`action_type`,`example`,`before`,`after`) VALUES ('action_0001','category_002','業界を20個上げてみよう！','業界を20個挙げて、その中で興味がある業界と興味がない業界とどちらでもない業界に分けてみましょう。より広くから自分の納得できる選択をすることで、キャリア選択のミスを減らせます。',`12分`,2,`ccc`,`ddd`,`eee`);
+-- INSERT INTO action (`action_id`,`category_id`,`title`,`content`,`standard_time`,`action_type`,`example`,`before`,`after`) VALUES ('action_0002','category_003','自分が働いているイメージを付けてみよう！','気になる会社の社員インタビューを見てみましょう。「会社名 社員インタビュー」で検索すれば基本的には出てきます。',`12分`,2,`ccc`,`ddd`,`eee`);
+-- INSERT INTO action (`action_id`,`category_id`,`title`,`content`,`standard_time`,`action_type`,`example`,`before`,`after`) VALUES ('action_0003','category_003','自分の人生設計について考えてみよう！','あなたは何歳で結婚して、子供は何人欲しいですか？そしてどれくらい豊かな生活を望みますか？その実現に必要な年収を概算してみよう。',`12分`,2,`ccc`,`ddd`,`eee`);
+-- INSERT INTO action (`action_id`,`category_id`,`title`,`content`,`standard_time`,`action_type`,`example`,`before`,`after`) VALUES ('action_0004','category_002','自分が気になる業界の課題を見つけよう！','自分が気になる業界の課題が自分がやりたいことに合っているかどうかが分かれば適性が見えてくるかもしれません。',`12分`,2,`ccc`,`ddd`,`eee`);
+-- INSERT INTO action (`action_id`,`category_id`,`title`,`content`,`standard_time`,`action_type`,`example`,`before`,`after`) VALUES ('action_0005','category_001','自己分析① 自己分析を知ろう！','以下のstandard_timeの記事を読んで自己分析の意義、自己分析では何をやるのかのイメージをつけましょう。',`12分`,2,`ccc`,`ddd`,`eee`);
+-- INSERT INTO action (`action_id`,`category_id`,`title`,`content`,`standard_time`,`action_type`,`example`,`before`,`after`) VALUES ('action_0006','category_001','自己分析② 自分の根元的欲求を仮定しよう！','現時点で自分の一番深い位置にある欲求を仮定してみましょう。また、納得できるように裏付けるエピソードを掘り下げましょう',`12分`,2,`ccc`,`ddd`,`eee`);
+-- INSERT INTO action (`action_id`,`category_id`,`title`,`content`,`standard_time`,`action_type`,`example`,`before`,`after`) VALUES ('action_0007','category_001','自己分析③ 仮定した根元的欲求を掘り下げてみよう！','仮定してある根元的欲求は、実は欲求を満たすための手段かもしれないです。仮定に対して「なぜ」をくり返してもっと深くにある目的を探してみましょう。',`12分`,2,`ccc`,`ddd`,`eee`);
+-- INSERT INTO action (`action_id`,`category_id`,`title`,`content`,`standard_time`,`action_type`,`example`,`before`,`after`) VALUES ('action_0008','category_001','自己分析④ 深掘りされた9つの根元的欲求のどれに当てはまりそうか考えてみよう！','以下のstandard_timeの記事にある9つの根元的欲求を把握し、深掘りした根元的欲求と紐づけてみましょう。当てはまりそうにない場合は、まだ深掘りの余地があるかも知れないです。',`12分`,2,`ccc`,`ddd`,`eee`);
+-- INSERT INTO action (`action_id`,`category_id`,`title`,`content`,`standard_time`,`action_type`,`example`,`before`,`after`) VALUES ('action_0009','category_001','自己分析⑤ 根元的欲求のルーツを探ろう！','自分の根源的欲求はなにがきっかけでうまれたのか（原因）を知りましょう。自分の家庭環境や子供のころの印象に残っているエピソードは説得力が強いです。',`12分`,2,`ccc`,`ddd`,`eee`);
+-- INSERT INTO action (`action_id`,`category_id`,`title`,`content`,`standard_time`,`action_type`,`example`,`before`,`after`) VALUES ('action_0010','category_001','自己分析⑥ 自分の根元的欲求に基づく一貫した行動を一言で表してみよう！','色々なエピソードを振り返り、一貫している部分を言語化してみましょう。例「安定したい」 → 「なにかに依存しないでも生きていける能力を磨く」等',`12分`,2,`ccc`,`ddd`,`eee`);
+-- INSERT INTO action (`action_id`,`category_id`,`title`,`content`,`standard_time`,`action_type`,`example`,`before`,`after`) VALUES ('action_0011','category_001','自己分析⑦ 自分が定義した根元的欲求の納得感を90%以上にしよう！','過去のエピソードにおける自分の動機が遠回しにでも根元的欲求に結び付いているかどうかを確認してみましょう。また、根元的欲求が動機となって形成された自分の強みを探ってみましょう。例「なにかに依存しないでも生きていける能力を磨く」 → 強みは「ストイック」や「上昇志向」等',``,``,``);
+-- INSERT INTO action (`action_id`,`category_id`,`title`,`content`,`standard_time`,`action_type`,`example`,`before`,`after`) VALUES ('action_0012','category_001','自己分析⑧ 働くことで成し遂げたいことのアウトラインを知ろう！','standard_timeの記事の「あなたが人生をかけて成し遂げたいことは何か」を読んでアウトラインを把握しましょう。',`12分`,2,`ccc`,`ddd`,`eee`);
+-- INSERT INTO action (`action_id`,`category_id`,`title`,`content`,`standard_time`,`action_type`,`example`,`before`,`after`) VALUES ('action_0013','category_001','自己分析⑨ 根元的欲求から働くことで成し遂げたいこと見つけてみよう！','自分の根元的欲求が満たされない状況や要因を挙げてみましょう。ロジックツリーを使ってみるとうまく分析できます。',`12分`,2,`ccc`,`ddd`,`eee`);
+-- INSERT INTO action (`action_id`,`category_id`,`title`,`content`,`standard_time`,`action_type`,`example`,`before`,`after`) VALUES ('action_0014','category_001','自己分析⑩ 自分が一番解決したい問題を決めよう！','ひとつ前のアクションで問題が挙げることができたら、そのなかから自分が一番仕事にしたいものを選んでみましょう。選ぶ基準としては、自分の強みや好み、将来の計画、自分への影響量を考えましょう・',`12分`,2,`ccc`,`ddd`,`eee`);
+-- INSERT INTO action (`action_id`,`category_id`,`title`,`content`,`standard_time`,`action_type`,`example`,`before`,`after`) VALUES ('action_0015','category_001','自己分析⑪ 取り上げた問題を解決した未来（ビジョン）を言葉にしよう！','取り上げた問題を解決した先はどのような世の中になっているのかを言葉にしてみよう。社会的に価値があるものでも、個人的なものでもいいです。自分がそれを目指すために全力を尽くせるならOKです。',`12分`,2,`ccc`,`ddd`,`eee`);
+-- INSERT INTO action (`action_id`,`category_id`,`title`,`content`,`standard_time`,`action_type`,`example`,`before`,`after`) VALUES ('action_0016','category_001','自己分析⑫ ビジョンを実現する方法をイメージしよう！','具体的にどんな業界があって、それぞれがどのような課題にアプローチしているのか、それによってどのような影響を与えるかを考えましょう。',`12分`,2,`ccc`,`ddd`,`eee`);
+-- INSERT INTO action (`action_id`,`category_id`,`title`,`content`,`standard_time`,`action_type`,`example`,`before`,`after`) VALUES ('action_0017','category_001','自己分析⑬ 自分が決めたビジョンを合理化してみよう！','仮定した「働くことで成し遂げたいこと」のやる意義を3つ見つけましょう。合理化することで自信を持つことができ、モチベーション維持に大きく影響します。',`12分`,2,`ccc`,`ddd`,`eee`);
+-- INSERT INTO action (`action_id`,`category_id`,`title`,`content`,`standard_time`,`action_type`,`example`,`before`,`after`) VALUES ('action_0018','category_001','他人と自己分析をして、自分の価値観を相対的に評価しよう！','友達と、自分の過去のエピソードを深掘りして自分の価値観を相対的に評価してみましょう。2,3人でそれぞれの個性が出ているエピソードを話し合い、自分だったらその時どのような感情でどのような行動を取るかを話し合いましょう。',`12分`,2,`ccc`,`ddd`,`eee`);
+-- INSERT INTO action (`action_id`,`category_id`,`title`,`content`,`standard_time`,`action_type`,`example`,`before`,`after`) VALUES ('action_0019','category_001','自分の弱みや強みを絶対的に評価しよう！','根元的欲求を満たすための自分の行動原理によって形成されたであろう弱みと強みを挙げてみましょう。例 根元的欲求：「感情や人間関係を大事にしたい」→行動原理：「まず自分が相手をリスペクトする」→強み：「人の強みを見つけるのがうまい」',`12分`,2,`ccc`,`ddd`,`eee`);
+-- INSERT INTO action (`action_id`,`category_id`,`title`,`content`,`standard_time`,`action_type`,`example`,`before`,`after`) VALUES ('action_0020','category_001','他人と自己分析をして、自分の強みと弱みを相対的に評価しよう！','自分の強みや弱みが他者と完全に一致することは無いので、どのように違うのかを細かく分析してみましょう。また、他人の強みや弱みを知ることで相場感というものを付けることができるとなおよいです。',`12分`,2,`ccc`,`ddd`,`eee`);
+-- INSERT INTO action (`action_id`,`category_id`,`title`,`content`,`standard_time`,`action_type`,`example`,`before`,`after`) VALUES ('action_0021','category_001','自己PRを考えてみよう！','自己分析で深掘りした内容を人に伝えられる形に整理しよう。ここでは面接やESでよく聞かれる自己PRを400文字で考えましょう。結論ファーストや、伝わりやすい構成を意識しながら作りましょう。また、一番伝えたいことをあらかじめ決めておけばコンパクトにまとまると思います。',`12分`,2,`ccc`,`ddd`,`eee`);
+-- INSERT INTO action (`action_id`,`category_id`,`title`,`content`,`standard_time`,`action_type`,`example`,`before`,`after`) VALUES ('action_0022','category_001','学生時代頑張ったことを書いてみよう！','ESや面接で聞かれる「学生時代頑張ったこと」を400文字で書いてみましょう。ここでは自分の人間性や将来のビジョンと一貫性を持たせた内容にしてください。結論ファーストを意識することと、構成はPDCAを回していることが分かるように書きましょう。',`12分`,2,`ccc`,`ddd`,`eee`);
+-- INSERT INTO action (`action_id`,`category_id`,`title`,`content`,`standard_time`,`action_type`,`example`,`before`,`after`) VALUES ('action_0023','category_001','自分の3年後までのキャリアプランを仮定してみよう！','自分の人生の目標から逆算して3年後までにはどのようになっていなければいけないのかを400字以内でまとめてみましょう。気になる企業の社員インタビューを見るとイメージが付くかもしれません。。',`12分`,2,`ccc`,`ddd`,`eee`);
+
+
+-- INSERT INTO user (`user_id`,`email`,`password`,`status`) VALUES ('user_0001','tanaka@example.com','$2a$10$W4bAG3b7BBGo.3H3A6mvpOvz21KqKWfkCNsorq090O3dEFtki3B2e',1);
+-- INSERT INTO user (`user_id`,`email`,`password`,`status`) VALUES ('user_0002','tonouchi@example.com','$2a$10$0MQZGWpksJJMWRB5siwmVuYdXFNAO58WOc1h3ORzk76gwA2C4ppsy',75392);
+-- INSERT INTO user (`user_id`,`email`,`password`,`status`) VALUES ('user_0003','ishisaka@example.com','$2a$10$FGO1UYuqO13ajaAyNyKNuu6c8JLZ8X6JKLgzBDtYMSijp4xTPX5cC',1);
+-- INSERT INTO user (`user_id`,`email`,`password`,`status`) VALUES ('user_0004','takagi@example.com','$2a$10$w/jNyX7w6uVZITl7I6I6kel9HQZrIzfC7ZdWxMxyMWTob8B3b6Aja',1);
+-- INSERT INTO user (`user_id`,`email`,`password`,`status`) VALUES ('user_0005','okuse@example.com','$2a$10$PE7IftE.R94yn66ShDNF/ebhuvk7fm7HhykSntjBXPDEHDzQfcF5W',1);
+
+
+-- INSERT INTO profile (`user_id`,`name`,`university`,`major`,`graduation_year`,`aspiring_occupation`,`aspiring_field`,`sentence`,`image_path`,`job_hunting_status`,`deviation_value`) VALUES ('user_0001','田中悠貴','静岡大学','情報学部情報科学科',2021,'Google','プラットフォーム','田中悠貴と申します','https://localhost:3000',2,50);
+-- INSERT INTO profile (`user_id`,`name`,`university`,`major`,`graduation_year`,`aspiring_occupation`,`aspiring_field`,`sentence`,`image_path`,`job_hunting_status`,`deviation_value`) VALUES ('user_0002','登内啓悟','静岡大学','情報学部情報科学科',2021,'Google','プラットフォーム','登内啓悟と申します','https://localhost:3000',2,50);
+-- INSERT INTO profile (`user_id`,`name`,`university`,`major`,`graduation_year`,`aspiring_occupation`,`aspiring_field`,`sentence`,`image_path`,`job_hunting_status`,`deviation_value`) VALUES ('user_0003','石坂拓海','静岡大学','情報学部情報科学科',2021,'Google','ゲーム','石坂拓海と申します','https://localhost:3000',2,50);
+-- INSERT INTO profile (`user_id`,`name`,`university`,`major`,`graduation_year`,`aspiring_occupation`,`aspiring_field`,`sentence`,`image_path`,`job_hunting_status`,`deviation_value`) VALUES ('user_0004','高木志弥','文化芸術大学','デザイン科',2022,'Google','デザイン','高木志弥と申します','https://localhost:3000',1,50);
+-- INSERT INTO profile (`user_id`,`name`,`university`,`major`,`graduation_year`,`aspiring_occupation`,`aspiring_field`,`sentence`,`image_path`,`job_hunting_status`,`deviation_value`) VALUES ('user_0005','奥瀬雄哉','静岡大学','情報学部行動情報科',2023,'Google','プラットフォーム','奥瀬雄哉と申します','https://localhost:3000',1,50);
+
+
+-- INSERT INTO user_action (`user_action_id`,`user_id`,`action_id`,`status`,`do`,`reflection`,`next_atiom`,`evaluate_value`) VALUES ('user_action_9','user_0001','action_0001',2,'ああああ','いいい','ううう',5);
+-- INSERT INTO user_action (`user_action_id`,`user_id`,`action_id`,`status`,`do`,`reflection`,`next_atiom`,`evaluate_value`) VALUES ('user_action_10','user_0001','action_0002',1,'ああああ','いいい','ううう',5);
+-- INSERT INTO user_action (`user_action_id`,`user_id`,`action_id`,`status`,`do`,`reflection`,`next_atiom`,`evaluate_value`) VALUES ('user_action_1','user_0001','action_0003',1,'ああああ','いいい','ううう',5);
+-- INSERT INTO user_action (`user_action_id`,`user_id`,`action_id`,`status`,`do`,`reflection`,`next_atiom`,`evaluate_value`) VALUES ('user_action_2','user_0001','action_0004',1,'ああああ','いいい','ううう',5);
+-- INSERT INTO user_action (`user_action_id`,`user_id`,`action_id`,`status`,`do`,`reflection`,`next_atiom`,`evaluate_value`) VALUES ('user_action_3','user_0001','action_0005',1,'ああああ','いいい','ううう',5);
+
+-- INSERT INTO user_action (`user_action_id`,`user_id`,`action_id`,`status`,`do`,`reflection`,`next_atiom`,`evaluate_value`) VALUES ('user_action_4','user_0002','action_0001',1,'ああああ','いいい','ううう',4);
+-- INSERT INTO user_action (`user_action_id`,`user_id`,`action_id`,`status`,`do`,`reflection`,`next_atiom`,`evaluate_value`) VALUES ('user_action_5','user_0002','action_0002',1,'ああああ','いいい','ううう',4);
+-- INSERT INTO user_action (`user_action_id`,`user_id`,`action_id`,`status`,`do`,`reflection`,`next_atiom`,`evaluate_value`) VALUES ('user_action_6','user_0002','action_0003',2,'ああああ','いいい','ううう',4);
+-- INSERT INTO user_action (`user_action_id`,`user_id`,`action_id`,`status`,`do`,`reflection`,`next_atiom`,`evaluate_value`) VALUES ('user_action_7','user_0002','action_0004',2,'ああああ','いいい','ううう',4);
+-- INSERT INTO user_action (`user_action_id`,`user_id`,`action_id`,`status`,`do`,`reflection`,`next_atiom`,`evaluate_value`) VALUES ('user_action_8','user_0002','action_0005',1,'ああああ','いいい','ううう',4);
+
